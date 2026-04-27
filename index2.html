@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Trading Dashboard</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+}
+
+input, button {
+  padding: 10px;
+  margin: 5px;
+}
+
+table {
+  margin: auto;
+  margin-top: 20px;
+  border-collapse: collapse;
+  width: 80%;
+}
+
+td, th {
+  border: 1px solid #333;
+  padding: 10px;
+}
+
+.win { color: #22c55e; }
+.loss { color: #ef4444; }
+
+.box {
+  display: inline-block;
+  margin: 10px;
+  padding: 15px;
+  background: #1e293b;
+  border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📊 Trading Dashboard</h1>
+
+<input id="risk" type="number" placeholder="Risk %">
+<input id="result" type="number" placeholder="Result %">
+<button onclick="addTrade()">Add Trade</button>
+
+<div>
+  <div class="box">Trades: <span id="total">0</span></div>
+  <div class="box">Wins: <span id="wins">0</span></div>
+  <div class="box">Losses: <span id="losses">0</span></div>
+  <div class="box">Winrate: <span id="winrate">0%</span></div>
+  <div class="box">PnL: <span id="pnl">0%</span></div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Risk</th>
+<th>Result</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+
+<script>
+let trades = [];
+
+function addTrade() {
+  let risk = parseFloat(document.getElementById("risk").value);
+  let result = parseFloat(document.getElementById("result").value);
+
+  if (isNaN(risk) || isNaN(result)) return;
+
+  let outcome = result > 0 ? "WIN" : "LOSS";
+
+  trades.push({ risk, result, outcome });
+
+  render();
+}
+
+function render() {
+  let table = document.getElementById("table");
+  table.innerHTML = "";
+
+  let wins = 0;
+  let pnl = 0;
+
+  trades.forEach((t, i) => {
+    if (t.outcome === "WIN") wins++;
+    pnl += t.result;
+
+    table.innerHTML += `
+      <tr>
+        <td>${i+1}</td>
+        <td class="loss">-${t.risk}%</td>
+        <td class="${t.result>0?'win':'loss'}">${t.result>0?'+':''}${t.result}%</td>
+        <td class="${t.outcome==='WIN'?'win':'loss'}">${t.outcome}</td>
+      </tr>
+    `;
+  });
+
+  let total = trades.length;
+  let losses = total - wins;
+  let winrate = total ? (wins / total) * 100 : 0;
+
+  document.getElementById("total").innerText = total;
+  document.getElementById("wins").innerText = wins;
+  document.getElementById("losses").innerText = losses;
+  document.getElementById("winrate").innerText = winrate.toFixed(2) + "%";
+  document.getElementById("pnl").innerText = pnl.toFixed(2) + "%";
+}
+</script>
+
+</body>
+</html>
